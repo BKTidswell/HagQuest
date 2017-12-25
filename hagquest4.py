@@ -9,77 +9,77 @@ import random
 #this is REALLY badly formatted. but it works so i wont touch it
 def start():
 
-	prompt = "> "
+# 	prompt = "> "
 
-	print """
-You stand at the edge of a vast desert.
-Sandstorms whirl around like miniature tornadoes.
-Inside you see massive, monstrous shapes moving about.
-A withered hag waddles out in front of you.
-"EHEHEHEEEE, what is your name small boy??"
-	"""
-	username = raw_input(prompt)
+# 	print """
+# You stand at the edge of a vast desert.
+# Sandstorms whirl around like miniature tornadoes.
+# Inside you see massive, monstrous shapes moving about.
+# A withered hag waddles out in front of you.
+# "EHEHEHEEEE, what is your name small boy??"
+# 	"""
+# 	username = raw_input(prompt)
 
-	if username.lower() == "jarek lenda":
-		print """
-Hmmm, %s, eh?? You sound like a nice young boy.
-Well, %s, I hope you're not thinking of exploring...
-The desert!!
-EHEHEHEHE, many people more courageous and attractive than you have tried...
-and failed!!
-What makes you think you have what it takes, \'%s\'??
-If that is your real name???
-		""" % (username, username, username)
+# 	if username.lower() == "jarek lenda":
+# 		print """
+# Hmmm, %s, eh?? You sound like a nice young boy.
+# Well, %s, I hope you're not thinking of exploring...
+# The desert!!
+# EHEHEHEHE, many people more courageous and attractive than you have tried...
+# and failed!!
+# What makes you think you have what it takes, \'%s\'??
+# If that is your real name???
+# 		""" % (username, username, username)
 
-	elif (username.lower() == "" or username.lower() == " "):
-		print """
-The hag screeches and rips you to shreds, displeased by your silence!
-You die, nameless wanderer!
-			  """
-		exit()
+# 	elif (username.lower() == "" or username.lower() == " "):
+# 		print """
+# The hag screeches and rips you to shreds, displeased by your silence!
+# You die, nameless wanderer!
+# 			  """
+# 		exit()
 
-	else:
-		print """
-The hag screeches and rips you to shreds, displeased by your name.
-You die, %s!
-			  """ % username
-		exit()
+# 	else:
+# 		print """
+# The hag screeches and rips you to shreds, displeased by your name.
+# You die, %s!
+# 			  """ % username
+# 		exit()
 
-	reason = raw_input(prompt)
+# 	reason = raw_input(prompt)
 
-	print """
-The hag isn't really listening. The hag laughs. \"EHEHEHEEEE, as if that will get you through!
-No, you'll need a \n~hag\'s help~\nif you\'ve any chance of succeeding! Don't worry,
-though, %s, I'll help you out... Just as soon as you help me! This way, this way!\"\n
-	""" % username
+# 	print """
+# The hag isn't really listening. The hag laughs. \"EHEHEHEEEE, as if that will get you through!
+# No, you'll need a \n~hag\'s help~\nif you\'ve any chance of succeeding! Don't worry,
+# though, %s, I'll help you out... Just as soon as you help me! This way, this way!\"\n
+# 	""" % username
 
-	raw_input("PRESS ENTER")
+# 	raw_input("PRESS ENTER")
 
-	print """
-The hag leads you to a nearby apartment complex. \"EHEHEHEEEE, this is
-where I live! On the first floor, because I was here first! Me! I'm number one!!\"
-She shouts up to the other windows \"BETTER PAY YOUR RENT SOON OR I\'LL REPORT YOU
-TO THE LANDLORD, GOOD FOR NOTHINGS!!\" The hag leads you through a door, through an anteroom and
-into a messy kitchen. \"Here's the deal...\", says the hag, \"my apartment is a mess!!
-I need a strapping young man like you to help me clean it. But there aren't ordinary messes,
-oh no. These messes are absolutely... \n~hagalicious~!\nAs such, no normal means of cleaning them will do.\n"""
+# 	print """
+# The hag leads you to a nearby apartment complex. \"EHEHEHEEEE, this is
+# where I live! On the first floor, because I was here first! Me! I'm number one!!\"
+# She shouts up to the other windows \"BETTER PAY YOUR RENT SOON OR I\'LL REPORT YOU
+# TO THE LANDLORD, GOOD FOR NOTHINGS!!\" The hag leads you through a door, through an anteroom and
+# into a messy kitchen. \"Here's the deal...\", says the hag, \"my apartment is a mess!!
+# I need a strapping young man like you to help me clean it. But there aren't ordinary messes,
+# oh no. These messes are absolutely... \n~hagalicious~!\nAs such, no normal means of cleaning them will do.\n"""
 
-	raw_input("PRESS ENTER")
+# 	raw_input("PRESS ENTER")
 
-	print """
-\"First, there are my dishes. I had a super magic cleaning
-potion in my secret portal behind the fridge... but the fridge is broken and you're not
-allowed to move it til it's fixed! Then, there's my display cabinet in the living room.
-I had a magic feather duster... But I don't know where it went. Find it and dust it!
-You've also got to vacuum my rug in the bedroom, of course, but good luck with that. I don't
-even have a vacuum, and it's not like my good for nothing neighbor will let me borrow his.
-Finally, take out my garbage. It stinks. Good luck!!\" You turn to question the hag, but
-she's already fled out the front door and you hear a key turn in the lock. \"I'll be back
-in an hour!\" she says. \"Make sure my house is spick and span -- or else I'll give you a\n
-~hagalicious~\n
-beating!!!!!\" Her footsteps fade, and you sense you are alone.\n\n
-------------------------------------HAGQUEST------------------------------------\n\n\n\n
-To quit, enter \"quit game\".\n\n\n\n"""
+# 	print """
+# \"First, there are my dishes. I had a super magic cleaning
+# potion in my secret portal behind the fridge... but the fridge is broken and you're not
+# allowed to move it til it's fixed! Then, there's my display cabinet in the living room.
+# I had a magic feather duster... But I don't know where it went. Find it and dust it!
+# You've also got to vacuum my rug in the bedroom, of course, but good luck with that. I don't
+# even have a vacuum, and it's not like my good for nothing neighbor will let me borrow his.
+# Finally, take out my garbage. It stinks. Good luck!!\" You turn to question the hag, but
+# she's already fled out the front door and you hear a key turn in the lock. \"I'll be back
+# in an hour!\" she says. \"Make sure my house is spick and span -- or else I'll give you a\n
+# ~hagalicious~\n
+# beating!!!!!\" Her footsteps fade, and you sense you are alone.\n\n
+# ------------------------------------HAGQUEST------------------------------------\n\n\n\n
+# To quit, enter \"quit game\".\n\n\n\n"""
 
 	enter(hags_kitchen)
 
@@ -96,7 +96,7 @@ class Room(object):
 	# a description of the room, the items in the room,
 	# a list of commands that can occur in a room
 	# and the exits from the room
-	def __init__(self,name,description,exits,items):
+	def __init__(self,name,description,exits,items,targets):
 		#name of the room
 		self.name = name
 		#the description
@@ -105,6 +105,8 @@ class Room(object):
 		self.exits = exits
 		#an array of the objects located in the room
 		self.items = items
+		#targets, an array of objects that you can use things on
+		self.targets = targets
 
 
 #---------------------------------ITEMS-----------------------------------------
@@ -117,6 +119,18 @@ class Item(object):
 		self.name = name
 		#description of the item
 		self.description = description
+		#when its created put it into the item dictionary
+
+#---------------------------------TARGETS-----------------------------------------
+# items are their own class
+class Target(object):
+	"""Parent class for every target."""
+	# targets have a name, the item that can be used on them 
+	def __init__(self,name,usables):
+		#name of the item
+		self.name = name
+		#description of the item
+		self.usables = usables
 		#when its created put it into the item dictionary
 
 
@@ -148,6 +162,13 @@ vacuum = Item("Magic Vacuum", "\"The Super-Sucker 5000 -- the ultimate in cleani
 
 allItems = [potion,feather_duster,sword,spider,watch,box,key,knife,vacuum]
 
+#---------------------------------ITEMS-----------------------------------------
+#------------------------------List of items in the game------------------------
+
+TV = Target("TV",[feather_duster,sword])
+dishes = Target("Dishes",[potion])
+cabinet = Target("Cabinet",[feather_duster])
+
 #-------------------------------------------------------------------------------
 #-----------------------------------ROOMS---------------------------------------
 #---------------------------list of rooms in the game---------------------------
@@ -162,7 +183,8 @@ condition. Windows on the west wall open out onto a dismal alley. The ceiling
 fan still works, though, so there's that. You find the slight breeze rather
 refreshing.\n""",
 {"valid exits" : ["east","west"], "invalid exits" : ["north","south","northeast","southeast","northwest","southwest"]},
-[watch,knife])
+[watch,knife],
+[dishes])
 
 hags_livingroom = Room("Hag's Living Room","""
 \n\nIt looks as if someone made it their goal to come here every day of their life
@@ -177,7 +199,8 @@ saggiest display cabinet you've ever seen. Perhaps the purpose was originally to
 display cobwebs, but you doubt it -- regardless, that's what it is displaying
 now, with a huge, nasty looking spider glaring at you from inside.\n""",
 {"valid exits" : ["west"], "invalid exits" : ["north","south","northeast","southeast","northwest","southwest","east"]},
-[spider])
+[spider],
+[cabinet,TV])
 
 alley = Room("Alley","""\n\nA long, narrow, alley about twenty feet wide which is bricked
 up on either end, throwing everything into shadow. You are at one end of the alley,
@@ -185,6 +208,7 @@ and at the other end you think you can see a dumpster (who puts a dumpster in a
 bricked up alley?? How does the garbageman even get it????) It's hard to tell,
 of course, because between you and the dumpster is a huge dragon.\n""",
 {"valid exits" : ["east"], "invalid exits" : ["north","south","northeast","southeast","northwest","southwest","west"]},
+[],
 [])
 
 house = [hags_kitchen,hags_livingroom,alley]
@@ -225,20 +249,20 @@ def enter(room):
 		print "There is an exit to the " + exit + " here.\n"
 
 	#this calls the parser that interacts with the "Room" objects
-	roomparse(room.name,room.description,room.exits,room.items)
+	roomparse(room.name,room.description,room.exits,room.items,room.targets)
 
-def quitGame(name,description,exits,items,command):
+def quitGame(name,description,exits,items,command,targets):
 	print "Goodbye, quitter!\n"
 	exit()
 
-def laugh(name,description,exits,items,command):
+def laugh(name,description,exits,items,command,targets):
 	print """
 		You'd laugh, but you're Jarek Lenda. You remember what your father
 		always told you... \"Son! Don't laugh at hags!\"
 		That's asking for trouble!\n
 		"""
 
-def look(name,description,exits,items,command):
+def look(name,description,exits,items,command,targets):
 	print name
 
 	print description
@@ -253,7 +277,7 @@ def checkInventory(name,description,exits,items,command):
 	 for item in inventory:
 				print item.name
 
-def helpMe(name,description,exits,items,command):
+def helpMe(name,description,exits,items,command,targets):
 	print "Here are the functions you can use:"
 	for d in actionDict:
 		print d
@@ -263,7 +287,7 @@ def helpMe(name,description,exits,items,command):
 #----------------------------DIRECTION FINDER----------------------------------
 #parses the player's input to see if they're trying to move in a direction, and
 #returns correct response
-def direction_finder(name,description,exits,items,command):
+def direction_finder(name,description,exits,items,command,targets):
 	#for the dictionary of invalid and valid exits brought over from the "room" objects
 	for i in exits["valid exits"]:
 		#if any movement keywords related to the valid exits exist we go that way and call up the enter function
@@ -297,7 +321,7 @@ def direction_finder(name,description,exits,items,command):
 #---------------------------ITEM_GETTER-----------------------------------------
 #checks to see if an item is in the room and gettable; if so, removes from room
 #and adds to inventory
-def item_getter(name,description,exits,items,command):
+def item_getter(name,description,exits,items,command,targets):
 	foundItem = False
 	for item in items:
 		if item.name.lower() in command:
@@ -314,7 +338,7 @@ def item_getter(name,description,exits,items,command):
 #---------------------------Item User-----------------------------------------
 #checks to see if item can be used in the room, if so uses it.
 
-def item_user(name,description,exits,items,command):
+def item_user(name,description,exits,items,command,targets):
 	splitcommand = command.split(" ")
 	usingName = splitcommand[1]
 
@@ -332,14 +356,45 @@ def item_user(name,description,exits,items,command):
 		print "%s doesn't exist....." % usingName
 		return
 
-	if item in inventory:
+	if usingItem in inventory:
 		haveItem = True
 
 	if not haveItem:
 		print "You don't have a %s......" % item.name
 		return
 
-	print "You used %s! Not sure what it did" % item.name
+	useOn = raw_input("What do you want to use the %s on?" % item.name).lower()
+
+	# didUse = False
+
+	# for target in targets:
+	# 	if target.name.lower() == useOn:
+	# 		if usingItem in target.usables:
+
+
+
+	print "You used the %s on the %s. Nothing happened" % (usingName,useOn)
+
+
+
+
+#---------------------------ITEM LOOKER-----------------------------------------
+#for examining items/objects
+#to do - better function name than item looker????
+def item_looker(name,description,exits,items,command,targets):
+    itemPresent = False
+    for item in items:
+        if item.name.lower() in command:
+            if item in inventory:
+                itemPresent = True
+                print item.description
+            for room in house:
+                if room.name == name:
+                    itemPresent = True
+                    print item.description
+
+    if itemPresent == False:
+        print "Eh? You don't see that here."
 
 
 
@@ -347,7 +402,7 @@ def item_user(name,description,exits,items,command):
 
 actionDict =    {"die":quitGame,"exit game":quitGame,"quit game":quitGame,"laugh":laugh,"look":look,"-i":checkInventory,"take":item_getter,
 				"get":item_getter,"pick up":item_getter,"east":direction_finder,"west":direction_finder,"north":direction_finder,
-				"south":direction_finder,"help":helpMe,"use":item_user}
+				"south":direction_finder,"help":helpMe,"use":item_user,"x":item_looker,"examine":item_looker,"check":item_looker}
 
 
 #--------------------------------Invalid Inputs----------------------------------------
@@ -367,7 +422,7 @@ invalid_input = ["No... Think! What would a Lenda do?!\n",
 
 #------------------------------ROOM PARSER--------------------------------------
 #this parser parses what actions can be done to basically anything at this point
-def roomparse(name,description,exits,items):
+def roomparse(name,description,exits,items,targets):
 
 	#so... always
 	while 1:
@@ -379,7 +434,7 @@ def roomparse(name,description,exits,items):
 
 		for d in actionDict:
 			if d in command:
-				actionDict[d](name,description,exits,items,command)
+				actionDict[d](name,description,exits,items,command,targets)
 				validInput = True
 				house = [hags_kitchen,hags_livingroom,alley]
 				break        
