@@ -146,6 +146,8 @@ knife = Item("Knife", "A... a sharp, glimmering knife. What are you planning to 
 
 vacuum = Item("Magic Vacuum", "\"The Super-Sucker 5000 -- the ultimate in cleaning technology, straight from the Plane of Air to your living room!\"")
 
+allItems = [potion,feather_duster,sword,spider,watch,box,key,knife,vacuum]
+
 #-------------------------------------------------------------------------------
 #-----------------------------------ROOMS---------------------------------------
 #---------------------------list of rooms in the game---------------------------
@@ -309,11 +311,43 @@ def item_getter(name,description,exits,items,command):
 	if foundItem == False:
 		print "I guess you can't %s" % command
 
+#---------------------------Item User-----------------------------------------
+#checks to see if item can be used in the room, if so uses it.
+
+def item_user(name,description,exits,items,command):
+	splitcommand = command.split(" ")
+	usingName = splitcommand[1]
+
+	itemExists = False
+	haveItem = False
+	usable = False
+
+	for item in allItems:
+		if usingName.lower() in item.name.lower():
+			usingItem = item
+			itemExists = True
+			break
+
+	if not itemExists:
+		print "%s doesn't exist....." % usingName
+		return
+
+	if item in inventory:
+		haveItem = True
+
+	if not haveItem:
+		print "You don't have a %s......" % item.name
+		return
+
+	print "You used %s! Not sure what it did" % item.name
+
+
+
 #--------------------------------Action Dictionary----------------------------------------
 
-actionDict =    {"exit game":quitGame,"quit game":quitGame,"laugh":laugh,"look":look,"-i":checkInventory,"take":item_getter,
+actionDict =    {"die":quitGame,"exit game":quitGame,"quit game":quitGame,"laugh":laugh,"look":look,"-i":checkInventory,"take":item_getter,
 				"get":item_getter,"pick up":item_getter,"east":direction_finder,"west":direction_finder,"north":direction_finder,
-				"south":direction_finder,"help":helpMe}
+				"south":direction_finder,"help":helpMe,"use":item_user}
 
 
 #--------------------------------Invalid Inputs----------------------------------------
