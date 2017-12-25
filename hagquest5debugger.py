@@ -232,16 +232,35 @@ def item_getter(name,description,exits,items,command):
 				if room.name == name:
 					room.items.remove(item)
 					foundItem = True
-					print "You took the %s." % item.name
+					print "You took the %s." % item.name.lower()
 
 	if foundItem == False:
-		print "I guess you can't %s" % command
+		print "I guess you can't %s." % command
+
+#---------------------------ITEM LOOKER-----------------------------------------
+#for examining items/objects
+#to do - better function name than item looker????
+def item_looker(name,description,exits,items,command):
+    itemPresent = False
+    for item in items:
+        if item.name.lower() in command:
+            if item in inventory:
+                itemPresent = True
+                print item.description
+            for room in house:
+                if room.name == name:
+                    itemPresent = True
+                    print item.description
+
+    if itemPresent == False:
+        print "Eh? You don't see that here."
+
 
 #--------------------------------Action Dictionary----------------------------------------
 
 actionDict =    {"exit game":quitGame,"quit game":quitGame,"laugh":laugh,"look":look,"-i":checkInventory,"take":item_getter,
 				"get":item_getter,"pick up":item_getter,"east":direction_finder,"west":direction_finder,"north":direction_finder,
-				"south":direction_finder,"help":helpMe}
+				"south":direction_finder,"help":helpMe,"x":item_looker,"examine":item_looker,"check":item_looker}
 
 
 #--------------------------------Invalid Inputs----------------------------------------
