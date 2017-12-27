@@ -2,6 +2,225 @@ from sys import exit
 import random
 
 #------------------------------------------------------------------------------
+#---------------------------Early Varible Delaration---------------------------
+#------------------------------------------------------------------------------
+
+#rooms
+hags_kitchen = None
+hags_livingroom = None
+alley = None
+
+
+#------------------------------------------------------------------------------
+#---------------------------GLOBAL FUNCTIONS-----------------------------------
+#------------------------------------------------------------------------------
+
+#--------------------------------ENTER-----------------------------------------
+#this is called when entering a new room and for the first time when the game
+#is started
+#loads up the room
+def enter(room):
+	#prints room name
+	print room.name
+	#prints the room description
+	print room.description
+	#prints a list of items in the room
+	for item in room.items:
+		if item.takable:
+			print "There is a " + item.name.lower() + " here.\n"
+	#prints a list of available exits in the room
+	for exit in room.exits["valid exits"]:
+		print "There is an exit to the " + exit + " here.\n"
+
+	#this calls the parser that interacts with the "Room" objects
+	roomparse(room.name,room.description,room.exits,room.items)
+
+
+#--------------------------------User Response-----------------------------------
+
+def quitGame(name,description,exits,items,command):
+	print "Goodbye, quitter!\n"
+	exit()
+
+def laugh(name,description,exits,items,command):
+	print """
+		You'd laugh, but you're Jarek Lenda. You remember what your father
+		always told you... \"Son! Don't laugh at hags!\"
+		That's asking for trouble!\n
+		"""
+
+def look(name,description,exits,items,command):
+	print name
+
+	print description
+
+	for item in items:
+		if item.takable:
+			print "There is a " + item.name.lower() + " here.\n"
+
+	for exit in exits["valid exits"]:
+		print "There is an exit to the " + exit + " here.\n"
+
+def checkInventory(name,description,exits,items,command):
+	 for item in inventory:
+				print item.name
+
+def helpMe(name,description,exits,items,command):
+	print "Here are the functions you can use:"
+	for d in actionDict:
+		print d
+
+def item_adder(item,room):
+	room.items.append(item)
+
+def room_description_changer(description,room):
+	room.description = description
+
+def item_description_changer(description,item):
+	item.description = description
+
+def spider_add(room,numSpiders):
+	for x in range(numSpiders):
+		room.items.append(spider)
+
+
+#----------------------------DIRECTION FINDER----------------------------------
+#parses the player's input to see if they're trying to move in a direction, and
+#returns correct response
+def direction_finder(name,description,exits,items,command):
+	#for the dictionary of invalid and valid exits brought over from the "room" objects
+	for i in exits["valid exits"]:
+		#if any movement keywords related to the valid exits exist we go that way and call up the enter function
+		if (command == "%s" % i or command == "go %s" % i or command == "move %s" % i or command == "walk %s" % i)\
+				and name == "Hag's Kitchen":
+
+			if "west" in command:
+				print "You go West.\n"
+
+				enter(alley)
+
+			elif "east" in command:
+				print "You go East.\n"
+
+				enter(hags_livingroom)
+		elif (command == "%s" %i or command == "go %s" % i or command == "move %s" % i or command == "walk %s" % i)\
+				and name == "Alley":
+
+			print "You go East.\n"
+
+			enter(hags_kitchen)
+
+		elif (command == "%s" %i or command == "go %s" % i or command == "move %s" % i or command == "walk %s" % i)\
+				and name == "Hag's Living Room":
+			if "west" in command:
+
+				print "You go West.\n"
+
+				enter(hags_kitchen)
+
+#---------------------------ITEM_GETTER-----------------------------------------
+#checks to see if an item is in the room and gettable; if so, removes from room
+#and adds to inventory
+def item_getter(name,description,exits,items,command):
+	foundItem = False
+	for item in items:
+		if item.name.lower() in command and item.takable:
+			inventory.append(item)
+			for room in house:
+				if room.name == name:
+					room.items.remove(item)
+					foundItem = True
+					print "You took the %s." % item.name
+	
+	if foundItem == False:
+		print "I guess you can't %s" % command
+
+#---------------------------Item User-----------------------------------------
+#checks to see if item can be used in the room, if so uses it.
+
+def item_user(name,description,exits,items,command):
+	splitcommand = command.split(" ")
+	usingName = splitcommand[1]
+
+	itemExists = False
+	haveItem = False
+	usable = False
+
+	for item in allItems:
+		if usingName.lower() in item.name.lower():
+			usingItem = item
+			itemExists = True
+			break
+
+	if not itemExists:
+		print "%s doesn't exist....." % usingName
+		return
+
+	if usingItem in inventory:
+		haveItem = True
+
+	if not haveItem:
+		print "You don't have a %s......" % item.name
+		return
+
+	targetName = raw_input("What do you want to use the %s on? \n > "% item.name).lower()
+
+	isTarget = False
+	inRoom = False
+
+	for item in allItems:
+		if targetName.lower() in item.name.lower():
+			targetItem = item
+			isTarget = True
+			break 
+
+	if not isTarget:
+		print "%s doesn't exist......" % targetName
+		return	
+
+	if targetItem in items:
+		inRoom = True
+
+	if not inRoom:
+		print "%s isn't here....." % targetItem.name
+		return
+
+	for k in targetItem.usages:
+		if k.name == usingItem.name:
+			funcArray = targetItem.usages[usingItem]
+			print funcArray
+			for x in range(0,len(funcArray),2):
+				funcArray[x](funcArray[x+1][0],funcArray[x+1][1])
+
+
+			print "You used the %s on the %s. Something happened!" % (usingItem.name,targetItem.name)
+			return
+
+	print "You used the %s on the %s. Nothing happened..." % (usingItem.name,targetItem.name)
+
+
+
+
+#---------------------------ITEM LOOKER-----------------------------------------
+#for examining items/objects
+#to do - better function name than item looker????
+def item_looker(name,description,exits,items,command):
+	itemPresent = False
+	for item in items:
+		if item.name.lower() in command:
+			if item in inventory:
+				print item.description
+				return
+			for room in house:
+				if room.name == name:
+					print item.description
+					return
+
+	if itemPresent == False:
+		print "Eh? You don't see that here."
+
+
+#------------------------------------------------------------------------------
 #---------------------------START FUNCTION-------------------------------------
 #------------------------------------------------------------------------------
 #--------------------called when the game starts-------------------------------
@@ -96,7 +315,7 @@ class Room(object):
 	# a description of the room, the items in the room,
 	# a list of commands that can occur in a room
 	# and the exits from the room
-	def __init__(self,name,description,exits,items,targets):
+	def __init__(self,name,description,exits,items):
 		#name of the room
 		self.name = name
 		#the description
@@ -105,8 +324,7 @@ class Room(object):
 		self.exits = exits
 		#an array of the objects located in the room
 		self.items = items
-		#targets, an array of objects that you can use things on
-		self.targets = targets
+
 
 
 #---------------------------------ITEMS-----------------------------------------
@@ -114,24 +332,17 @@ class Room(object):
 class Item(object):
 	"""Parent class for every item."""
 	# items have a name, a description and a list of commands that apply to them
-	def __init__(self,name,description):
+	def __init__(self,name,description,takable,usages):
 		#name of the item
 		self.name = name
 		#description of the item
 		self.description = description
 		#when its created put it into the item dictionary
+		self.takable = takable
+		#determine if you can take it 
+		self.usages = usages
+		#dictionary of tools that you can use with it
 
-#---------------------------------TARGETS-----------------------------------------
-# items are their own class
-class Target(object):
-	"""Parent class for every target."""
-	# targets have a name, the item that can be used on them 
-	def __init__(self,name,usables):
-		#name of the item
-		self.name = name
-		#description of the item
-		self.usables = usables
-		#when its created put it into the item dictionary
 
 
 #---------------------------THE PLAYER------------------------------------------
@@ -142,32 +353,37 @@ class Player(object):
 #-------------------------------------------------------------------------------
 #---------------------------------ITEMS-----------------------------------------
 #------------------------------List of items in the game------------------------
-potion = Item("Super Magic Cleaning Potion", "A tiny bottle containing a sparkling, iridescent liquid. "+"The virility of this potion is undeniable.")
+potion = Item("Super Magic Cleaning Potion", "A tiny bottle containing a sparkling, iridescent liquid. "+"The virility of this potion is undeniable.",
+	True,{})
 
-feather_duster = Item("Feather Duster", "The hag said this was magical, but it looks like a regular feather duster to you. Guess that's why you're not a hag.")
+feather_duster = Item("Feather Duster", "The hag said this was magical, but it looks like a regular feather duster to you. Guess that's why you're not a hag.",
+	True,{})
 
-sword = Item("Sword", "Your sword. Long, thin and metal. You bought it from a used sword shop, but the dealer assured you it works like new.")
+sword = Item("Sword", "Your sword. Long, thin and metal. You bought it from a used sword shop, but the dealer assured you it works like new.",
+	True,{})
 
-spider = Item("Spider", "This spider has webs covering the entirety of the hag's cabinet and looks incredibly venomous. Probably best not to approach.")
+spider = Item("Spider", "This spider has webs covering the entirety of the hag's cabinet and looks incredibly venomous. Probably best not to approach.",
+	True,{})
 
-watch = Item("Pocketwatch", "Covered in grime, but tells the time well enough.")
+watch = Item("Pocketwatch", "Covered in grime, but tells the time well enough.",
+	True,{})
 
-box = Item("Terrarium", "Looks like a good home for any small-to-medium sized pet.")
+box = Item("Terrarium", "Looks like a good home for any small-to-medium sized pet.",
+	True,{})
 
-key = Item("Key", "Nondescript key. Probably fits a lock somewhere. Otherwise, what's the point?")
+key = Item("Key", "Nondescript key. Probably fits a lock somewhere. Otherwise, what's the point?",
+	True,{})
 
-knife = Item("Knife", "A... a sharp, glimmering knife. What are you planning to do with that?!")
+knife = Item("Knife", "A... a sharp, glimmering knife. What are you planning to do with that?!",
+	True,{})
 
-vacuum = Item("Magic Vacuum", "\"The Super-Sucker 5000 -- the ultimate in cleaning technology, straight from the Plane of Air to your living room!\"")
+vacuum = Item("Magic Vacuum", "\"The Super-Sucker 5000 -- the ultimate in cleaning technology, straight from the Plane of Air to your living room!\"",
+	True,{})
 
-allItems = [potion,feather_duster,sword,spider,watch,box,key,knife,vacuum]
+cabinet = Item("Cabinet", "A dusty cabinet.",
+	False,{feather_duster:[item_adder,[spider,hags_livingroom]]})
 
-#---------------------------------ITEMS-----------------------------------------
-#------------------------------List of items in the game------------------------
-
-TV = Target("TV",[feather_duster,sword])
-dishes = Target("Dishes",[potion])
-cabinet = Target("Cabinet",[feather_duster])
+allItems = [potion,feather_duster,sword,spider,watch,box,key,knife,vacuum,cabinet]
 
 #-------------------------------------------------------------------------------
 #-----------------------------------ROOMS---------------------------------------
@@ -183,8 +399,7 @@ condition. Windows on the west wall open out onto a dismal alley. The ceiling
 fan still works, though, so there's that. You find the slight breeze rather
 refreshing.\n""",
 {"valid exits" : ["east","west"], "invalid exits" : ["north","south","northeast","southeast","northwest","southwest"]},
-[watch,knife],
-[dishes])
+[watch,knife])
 
 hags_livingroom = Room("Hag's Living Room","""
 \n\nIt looks as if someone made it their goal to come here every day of their life
@@ -199,8 +414,7 @@ saggiest display cabinet you've ever seen. Perhaps the purpose was originally to
 display cobwebs, but you doubt it -- regardless, that's what it is displaying
 now, with a huge, nasty looking spider glaring at you from inside.\n""",
 {"valid exits" : ["west"], "invalid exits" : ["north","south","northeast","southeast","northwest","southwest","east"]},
-[spider],
-[cabinet,TV])
+[feather_duster,cabinet])
 
 alley = Room("Alley","""\n\nA long, narrow, alley about twenty feet wide which is bricked
 up on either end, throwing everything into shadow. You are at one end of the alley,
@@ -208,7 +422,6 @@ and at the other end you think you can see a dumpster (who puts a dumpster in a
 bricked up alley?? How does the garbageman even get it????) It's hard to tell,
 of course, because between you and the dumpster is a huge dragon.\n""",
 {"valid exits" : ["east"], "invalid exits" : ["north","south","northeast","southeast","northwest","southwest","west"]},
-[],
 [])
 
 house = [hags_kitchen,hags_livingroom,alley]
@@ -223,179 +436,10 @@ item_dict = {}
 #dictionary of all rooms in game with name as key to room
 
 #one's inventory, should be able to check it with "i"
-inventory = [sword]
+inventory = [sword,feather_duster]
 
 #list of commands possible for items
 #item_commands =
-
-#------------------------------------------------------------------------------
-#---------------------------GLOBAL FUNCTIONS-----------------------------------
-#------------------------------------------------------------------------------
-
-#--------------------------------ENTER-----------------------------------------
-#this is called when entering a new room and for the first time when the game
-#is started
-#loads up the room
-def enter(room):
-	#prints room name
-	print room.name
-	#prints the room description
-	print room.description
-	#prints a list of items in the room
-	for item in room.items:
-		print "There is a " + item.name.lower() + " here.\n"
-	#prints a list of available exits in the room
-	for exit in room.exits["valid exits"]:
-		print "There is an exit to the " + exit + " here.\n"
-
-	#this calls the parser that interacts with the "Room" objects
-	roomparse(room.name,room.description,room.exits,room.items,room.targets)
-
-def quitGame(name,description,exits,items,command,targets):
-	print "Goodbye, quitter!\n"
-	exit()
-
-def laugh(name,description,exits,items,command,targets):
-	print """
-		You'd laugh, but you're Jarek Lenda. You remember what your father
-		always told you... \"Son! Don't laugh at hags!\"
-		That's asking for trouble!\n
-		"""
-
-def look(name,description,exits,items,command,targets):
-	print name
-
-	print description
-
-	for item in items:
-		print "There is a " + item.name.lower() + " here.\n"
-
-	for exit in exits["valid exits"]:
-		print "There is an exit to the " + exit + " here.\n"
-
-def checkInventory(name,description,exits,items,command):
-	 for item in inventory:
-				print item.name
-
-def helpMe(name,description,exits,items,command,targets):
-	print "Here are the functions you can use:"
-	for d in actionDict:
-		print d
-
-
-
-#----------------------------DIRECTION FINDER----------------------------------
-#parses the player's input to see if they're trying to move in a direction, and
-#returns correct response
-def direction_finder(name,description,exits,items,command,targets):
-	#for the dictionary of invalid and valid exits brought over from the "room" objects
-	for i in exits["valid exits"]:
-		#if any movement keywords related to the valid exits exist we go that way and call up the enter function
-		if (command == "%s" % i or command == "go %s" % i or command == "move %s" % i or command == "walk %s" % i)\
-				and name == "Hag's Kitchen":
-
-			if "west" in command:
-				print "You go West.\n"
-
-				enter(alley)
-
-			elif "east" in command:
-				print "You go East.\n"
-
-				enter(hags_livingroom)
-		elif (command == "%s" %i or command == "go %s" % i or command == "move %s" % i or command == "walk %s" % i)\
-				and name == "Alley":
-
-			print "You go East.\n"
-
-			enter(hags_kitchen)
-
-		elif (command == "%s" %i or command == "go %s" % i or command == "move %s" % i or command == "walk %s" % i)\
-				and name == "Hag's Living Room":
-			if "west" in command:
-
-				print "You go West.\n"
-
-				enter(hags_kitchen)
-
-#---------------------------ITEM_GETTER-----------------------------------------
-#checks to see if an item is in the room and gettable; if so, removes from room
-#and adds to inventory
-def item_getter(name,description,exits,items,command,targets):
-	foundItem = False
-	for item in items:
-		if item.name.lower() in command:
-			inventory.append(item)
-			for room in house:
-				if room.name == name:
-					room.items.remove(item)
-					foundItem = True
-					print "You took the %s." % item.name
-	
-	if foundItem == False:
-		print "I guess you can't %s" % command
-
-#---------------------------Item User-----------------------------------------
-#checks to see if item can be used in the room, if so uses it.
-
-def item_user(name,description,exits,items,command,targets):
-	splitcommand = command.split(" ")
-	usingName = splitcommand[1]
-
-	itemExists = False
-	haveItem = False
-	usable = False
-
-	for item in allItems:
-		if usingName.lower() in item.name.lower():
-			usingItem = item
-			itemExists = True
-			break
-
-	if not itemExists:
-		print "%s doesn't exist....." % usingName
-		return
-
-	if usingItem in inventory:
-		haveItem = True
-
-	if not haveItem:
-		print "You don't have a %s......" % item.name
-		return
-
-	useOn = raw_input("What do you want to use the %s on?" % item.name).lower()
-
-	# didUse = False
-
-	# for target in targets:
-	# 	if target.name.lower() == useOn:
-	# 		if usingItem in target.usables:
-
-
-
-	print "You used the %s on the %s. Nothing happened" % (usingName,useOn)
-
-
-
-
-#---------------------------ITEM LOOKER-----------------------------------------
-#for examining items/objects
-#to do - better function name than item looker????
-def item_looker(name,description,exits,items,command,targets):
-    itemPresent = False
-    for item in items:
-        if item.name.lower() in command:
-            if item in inventory:
-                itemPresent = True
-                print item.description
-            for room in house:
-                if room.name == name:
-                    itemPresent = True
-                    print item.description
-
-    if itemPresent == False:
-        print "Eh? You don't see that here."
-
 
 
 #--------------------------------Action Dictionary----------------------------------------
@@ -422,7 +466,7 @@ invalid_input = ["No... Think! What would a Lenda do?!\n",
 
 #------------------------------ROOM PARSER--------------------------------------
 #this parser parses what actions can be done to basically anything at this point
-def roomparse(name,description,exits,items,targets):
+def roomparse(name,description,exits,items):
 
 	#so... always
 	while 1:
@@ -434,7 +478,7 @@ def roomparse(name,description,exits,items,targets):
 
 		for d in actionDict:
 			if d in command:
-				actionDict[d](name,description,exits,items,command,targets)
+				actionDict[d](name,description,exits,items,command)
 				validInput = True
 				house = [hags_kitchen,hags_livingroom,alley]
 				break        
