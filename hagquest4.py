@@ -64,7 +64,6 @@ def item_adder(item,roomName):
 	for room in house:
 		if room.name == roomName:
 			usingRoom = room
-			house.remove(room)
 			break
 	usingRoom.items.append(item)
 
@@ -72,7 +71,6 @@ def room_description_changer(description,roomName):
 	for room in house:
 		if room.name == roomName:
 			usingRoom = room
-			house.remove(room)
 			break
 	usingRoom.description = description
 
@@ -80,7 +78,6 @@ def item_description_changer(description,itemName):
 	for item in allItems:
 		if item.name == itemName:
 			usingItem = item
-			allItems.remove(item)
 			break
 	usingItem.description = description
 
@@ -88,10 +85,10 @@ def spider_adder(roomName,numSpiders):
 	for room in house:
 		if room.name == roomName:
 			usingRoom = room
-			house.remove(room)
 			break
 	for x in range(numSpiders):
 		usingRoom.items.append(spider)
+	
 
 
 #----------------------------DIRECTION FINDER----------------------------------
@@ -176,13 +173,18 @@ def item_user(name,description,exits,items,command):
 	targetName = raw_input("What do you want to use the %s on? \n > "% item.name).lower()
 
 	isTarget = False
-	inRoom = False
+	inRoom = False 
 
 	for item in allItems:
 		if targetName.lower() in item.name.lower():
 			targetItem = item
 			isTarget = True
 			break 
+
+	if targetItem == spider and usingItem == spider:
+		spider_adder(name,random.randint(2,10))
+		print "Spiders appeared!!!!"
+		return
 
 	if not isTarget:
 		print "%s doesn't exist......" % targetName
@@ -444,7 +446,7 @@ item_dict = {}
 #dictionary of all rooms in game with name as key to room
 
 #one's inventory, should be able to check it with "i"
-inventory = [sword,feather_duster]
+inventory = [sword,spider]
 
 #list of commands possible for items
 #item_commands =
