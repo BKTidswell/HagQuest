@@ -2,16 +2,6 @@ from sys import exit
 import random
 
 #------------------------------------------------------------------------------
-#---------------------------Early Varible Delaration---------------------------
-#------------------------------------------------------------------------------
-
-#rooms
-hags_kitchen = None
-hags_livingroom = None
-alley = None
-
-
-#------------------------------------------------------------------------------
 #---------------------------GLOBAL FUNCTIONS-----------------------------------
 #------------------------------------------------------------------------------
 
@@ -70,18 +60,38 @@ def helpMe(name,description,exits,items,command):
 	for d in actionDict:
 		print d
 
-def item_adder(item,room):
-	room.items.append(item)
+def item_adder(item,roomName):
+	for room in house:
+		if room.name == roomName:
+			usingRoom = room
+			house.remove(room)
+			break
+	usingRoom.items.append(item)
 
-def room_description_changer(description,room):
-	room.description = description
+def room_description_changer(description,roomName):
+	for room in house:
+		if room.name == roomName:
+			usingRoom = room
+			house.remove(room)
+			break
+	usingRoom.description = description
 
-def item_description_changer(description,item):
-	item.description = description
+def item_description_changer(description,itemName):
+	for item in allItems:
+		if item.name == itemName:
+			usingItem = item
+			allItems.remove(item)
+			break
+	usingItem.description = description
 
-def spider_add(room,numSpiders):
+def spider_adder(roomName,numSpiders):
+	for room in house:
+		if room.name == roomName:
+			usingRoom = room
+			house.remove(room)
+			break
 	for x in range(numSpiders):
-		room.items.append(spider)
+		usingRoom.items.append(spider)
 
 
 #----------------------------DIRECTION FINDER----------------------------------
@@ -188,10 +198,8 @@ def item_user(name,description,exits,items,command):
 	for k in targetItem.usages:
 		if k.name == usingItem.name:
 			funcArray = targetItem.usages[usingItem]
-			print funcArray
 			for x in range(0,len(funcArray),2):
 				funcArray[x](funcArray[x+1][0],funcArray[x+1][1])
-
 
 			print "You used the %s on the %s. Something happened!" % (usingItem.name,targetItem.name)
 			return
@@ -381,7 +389,7 @@ vacuum = Item("Magic Vacuum", "\"The Super-Sucker 5000 -- the ultimate in cleani
 	True,{})
 
 cabinet = Item("Cabinet", "A dusty cabinet.",
-	False,{feather_duster:[item_adder,[spider,hags_livingroom]]})
+	False,{feather_duster:[item_adder,[spider,"Hag's Living Room"],item_description_changer,["A clean cabinet","Cabinet"]]})
 
 allItems = [potion,feather_duster,sword,spider,watch,box,key,knife,vacuum,cabinet]
 
@@ -480,7 +488,7 @@ def roomparse(name,description,exits,items):
 			if d in command:
 				actionDict[d](name,description,exits,items,command)
 				validInput = True
-				house = [hags_kitchen,hags_livingroom,alley]
+				#house = [hags_kitchen,hags_livingroom,alley]
 				break        
 		
 		if not validInput:
