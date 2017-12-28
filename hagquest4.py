@@ -67,6 +67,26 @@ def item_adder(item,roomName):
 			break
 	usingRoom.items.append(item)
 
+def item_remover(item,roomName):
+	for room in house:
+		if room.name == roomName:
+			usingRoom = room
+			break
+	if item in usingRoom.items:
+		usingRoom.items.remove(item)
+
+def item_invent_adder(itemName,eh):
+	for item in allItems:
+		if item.name == itemName:
+			inventory.append(item)
+			return
+
+def item_invent_remover(itemName,eh):
+	for item in inventory:
+		if item.name == itemName:
+			inventory.remove(item)
+			return		
+
 def room_description_changer(description,roomName):
 	for room in house:
 		if room.name == roomName:
@@ -80,6 +100,9 @@ def item_description_changer(description,itemName):
 			usingItem = item
 			break
 	usingItem.description = description
+
+def usage_descriptor(description,eh):
+	print description
 
 def spider_adder(roomName,numSpiders):
 	for room in house:
@@ -129,18 +152,31 @@ def direction_finder(name,description,exits,items,command):
 #checks to see if an item is in the room and gettable; if so, removes from room
 #and adds to inventory
 def item_getter(name,description,exits,items,command):
-	foundItem = False
 	for item in items:
 		if item.name.lower() in command and item.takable:
 			inventory.append(item)
 			for room in house:
 				if room.name == name:
 					room.items.remove(item)
-					foundItem = True
 					print "You took the %s." % item.name
+					return
 	
-	if foundItem == False:
-		print "I guess you can't %s" % command
+	print "I guess you can't %s" % command
+
+#---------------------------ITEM_DROPPER-----------------------------------------
+#checks to see if an item is in the room and gettable; if so, removes from room
+#and adds to inventory
+def item_dropper(name,description,exits,items,command):
+	for item in allItems:
+		if item.name.lower() in command and item in inventory:
+			inventory.remove(item)
+			for room in house:
+				if room.name == name:
+					room.items.append(item)
+					print "You dropped the %s." % item.name
+					return
+	
+	print "I guess you can't %s" % command
 
 #---------------------------Item User-----------------------------------------
 #checks to see if item can be used in the room, if so uses it.
@@ -181,14 +217,14 @@ def item_user(name,description,exits,items,command):
 			isTarget = True
 			break 
 
+	if not isTarget:
+		print "%s doesn't exist......" % targetName
+		return	
+
 	if targetItem == spider and usingItem == spider:
 		spider_adder(name,random.randint(2,10))
 		print "Spiders appeared!!!!"
 		return
-
-	if not isTarget:
-		print "%s doesn't exist......" % targetName
-		return	
 
 	if targetItem in items:
 		inRoom = True
@@ -202,22 +238,17 @@ def item_user(name,description,exits,items,command):
 			funcArray = targetItem.usages[usingItem]
 			for x in range(0,len(funcArray),2):
 				funcArray[x](funcArray[x+1][0],funcArray[x+1][1])
-
-			print "You used the %s on the %s. Something happened!" % (usingItem.name,targetItem.name)
 			return
 
-	print "You used the %s on the %s. Nothing happened..." % (usingItem.name,targetItem.name)
-
-
+	print "You used the %s on the %s??? Nothing happened..." % (usingItem.name,targetItem.name)
 
 
 #---------------------------ITEM LOOKER-----------------------------------------
 #for examining items/objects
 #to do - better function name than item looker????
 def item_looker(name,description,exits,items,command):
-	itemPresent = False
 	for item in items:
-		if item.name.lower() in command:
+		if command.split(" ")[1] in item.name.lower():
 			if item in inventory:
 				print item.description
 				return
@@ -226,8 +257,7 @@ def item_looker(name,description,exits,items,command):
 					print item.description
 					return
 
-	if itemPresent == False:
-		print "Eh? You don't see that here."
+	print "Eh? You don't see that here."
 
 
 #------------------------------------------------------------------------------
@@ -378,9 +408,6 @@ spider = Item("Spider", "This spider has webs covering the entirety of the hag's
 watch = Item("Pocketwatch", "Covered in grime, but tells the time well enough.",
 	True,{})
 
-box = Item("Terrarium", "Looks like a good home for any small-to-medium sized pet.",
-	True,{})
-
 key = Item("Key", "Nondescript key. Probably fits a lock somewhere. Otherwise, what's the point?",
 	True,{})
 
@@ -390,10 +417,93 @@ knife = Item("Knife", "A... a sharp, glimmering knife. What are you planning to 
 vacuum = Item("Magic Vacuum", "\"The Super-Sucker 5000 -- the ultimate in cleaning technology, straight from the Plane of Air to your living room!\"",
 	True,{})
 
-cabinet = Item("Cabinet", "A dusty cabinet.",
-	False,{feather_duster:[item_adder,[spider,"Hag's Living Room"],item_description_changer,["A clean cabinet","Cabinet"]]})
+terrarium = Item("Terrarium", "It's a terrarium! You can put things in this! Maybe a spider?",
+	True,{})
 
-allItems = [potion,feather_duster,sword,spider,watch,box,key,knife,vacuum,cabinet]
+telephone_book = Item("Telephone Book", "A telephone book with only one number 1,000 times?? It's for a fridge repairman",
+	True,{})
+
+hammer = Item("Hammer of Radient Light", "Holy light shines out of this hammer. Powerful enoguh to defeat any evil. Or annoyance",
+	True,{})
+
+trash = Item("Trash", "It's a hag's trash. I wouldn't look in if I were you.",
+	True,{})
+
+ladder = Item("Ladder", "One big old ladder",
+	True,{})
+
+tv = Item("TV", "A very static-y TV",
+	True,{})
+
+portable_forge = Item("TV", "A very static-y TV",
+	True,{})
+
+rusty_hammer = Item("Rusty Hammer", "A rusty hammer. Looks like it's been used for breaking nuts.",
+	True,{portable_forge:[usage_descriptor,["You reforge the rust off the hammer","eh"],
+						   item_invent_adder,["Hammer of Radient Light","eh"],
+						   item_invent_remover,["Rusty Hammer","eh"]]})
+
+cabinet = Item("Cabinet", "A dusty cabinet.",
+	False,{feather_duster:[usage_descriptor,["You quickly dust off the cabinets","eh"],
+						   item_adder,[spider,"Hag's Living Room"],
+		   				   item_description_changer,["A clean cabinet","Cabinet"],
+		   				   room_description_changer,["a room with a clean cabinet","Hag's Living Room"]]})
+
+dishes = Item("Dishes", "Some dirty dishes.",
+	False,{potion:[usage_descriptor,["You get your elbow grease on and clean off the dishes with the potion","eh"],
+				   item_description_changer,["These dishes are clean alright.","Dishes"],
+		   		   room_description_changer,["A room with a clean dishes","Hag's Kitchen"]]})
+
+garbage_can = Item("Garbage Can", "A can for garbage.",
+	False,{trash:[usage_descriptor,["You place the garbage right in the can","eh"],
+					item_adder,[terrarium,"Alley"],
+		   		    item_description_changer,["A can full of garbage.","Garbage Can"]]})
+
+dragon = Item("Dragon", "It's one big ol' dragon.",
+	False,{hammer:[usage_descriptor,["You bop the dragon on the nose","eh"],
+				   item_adder,[garbage_can,"Alley"],
+				   item_description_changer,["This dragon looks badly beaten","Dragon"],
+		   		   room_description_changer,["No dragons here anymore. Youc an get to the garbage can tho","Alley"]]})
+
+rug = Item("Rug", "Super dusty rug",
+	False,{vacuum:[usage_descriptor,["You turn on the vaccum and clean off that rug","eh"],
+				   item_description_changer,["Wow this rug is now clean. Not just grey and dusty.","Rug"],
+		   		   room_description_changer,["Looks like this room has a clean rug in it.","???"]]})
+
+satellite_dish = Item("Satellite Dish", "The satellite dish. It's barely held up by a feather duster. If you just took the duster it would probably break and the hag would have your head",
+	False,{sword:[usage_descriptor,["You quickly swap out the sword for the feather duster! The sword is sure wedged in there now","eh"],
+				  item_invent_adder,[feather_duster,"Alley"],
+				  item_invent_remover,["Sword","eh"],
+		   		  item_description_changer,["The satellite dish. It's securely held up by your sword.","Satellite Dish"],
+		   		  item_description_changer,["Now is crystal clean. You can see an add for a portable forging set","TV"]]})
+
+roof = Item("Roof", "The top of the house. You can see a satellite dish, thought it's too far to reach for now.....",
+	False,{ladder:[usage_descriptor,["You place the ladder. Now you have access to the satellite dish!","eh"],
+						   item_adder,[satellite_dish,"Alley"],
+		   				   item_description_changer,["The roof. Now you can access the satellite dish!","Roof"]]})
+
+pool = Item("Pool", "A pool of acid. There's something at the bottom, but you'd need to clean the acid away first",
+	False,{potion:[usage_descriptor,["You clean all the acid away","eh"],
+				   item_adder,[rusty_hammer,"???"],
+		   		   item_description_changer,["An empty pool with a hammer at the bottom","Pool"]]})
+
+allItems = [potion,feather_duster,sword,spider,watch,key,knife,vacuum,cabinet,dragon,garbage_can,
+			rug,dishes,trash,hammer,telephone_book,terrarium,satellite_dish,roof,ladder,tv,
+			portable_forge,rusty_hammer,pool]
+
+#ok so some chains of events
+
+#"eh" is there when a second arguemnt is needed only to fill the slot. 
+
+#beat dragon on nose -> adds garbage can
+#put trash in garbage can -> find terrarium
+
+#use ladder on roof -> adds stalite dish
+#use sword of stalite dish -> drops feather duster
+
+#use potion on pool -> drop rusty hammer
+# use portable forge on rusty hammer -> get good hammer
+
 
 #-------------------------------------------------------------------------------
 #-----------------------------------ROOMS---------------------------------------
@@ -409,7 +519,7 @@ condition. Windows on the west wall open out onto a dismal alley. The ceiling
 fan still works, though, so there's that. You find the slight breeze rather
 refreshing.\n""",
 {"valid exits" : ["east","west"], "invalid exits" : ["north","south","northeast","southeast","northwest","southwest"]},
-[watch,knife])
+[watch,knife,dishes,trash])
 
 hags_livingroom = Room("Hag's Living Room","""
 \n\nIt looks as if someone made it their goal to come here every day of their life
@@ -424,7 +534,7 @@ saggiest display cabinet you've ever seen. Perhaps the purpose was originally to
 display cobwebs, but you doubt it -- regardless, that's what it is displaying
 now, with a huge, nasty looking spider glaring at you from inside.\n""",
 {"valid exits" : ["west"], "invalid exits" : ["north","south","northeast","southeast","northwest","southwest","east"]},
-[feather_duster,cabinet])
+[cabinet])
 
 alley = Room("Alley","""\n\nA long, narrow, alley about twenty feet wide which is bricked
 up on either end, throwing everything into shadow. You are at one end of the alley,
@@ -432,7 +542,7 @@ and at the other end you think you can see a dumpster (who puts a dumpster in a
 bricked up alley?? How does the garbageman even get it????) It's hard to tell,
 of course, because between you and the dumpster is a huge dragon.\n""",
 {"valid exits" : ["east"], "invalid exits" : ["north","south","northeast","southeast","northwest","southwest","west"]},
-[])
+[dragon,roof])
 
 house = [hags_kitchen,hags_livingroom,alley]
 
@@ -446,7 +556,7 @@ item_dict = {}
 #dictionary of all rooms in game with name as key to room
 
 #one's inventory, should be able to check it with "i"
-inventory = [sword,spider]
+inventory = [sword,ladder]
 
 #list of commands possible for items
 #item_commands =
@@ -456,7 +566,8 @@ inventory = [sword,spider]
 
 actionDict =    {"die":quitGame,"exit game":quitGame,"quit game":quitGame,"laugh":laugh,"look":look,"-i":checkInventory,"take":item_getter,
 				"get":item_getter,"pick up":item_getter,"east":direction_finder,"west":direction_finder,"north":direction_finder,
-				"south":direction_finder,"help":helpMe,"use":item_user,"x":item_looker,"examine":item_looker,"check":item_looker}
+				"south":direction_finder,"help":helpMe,"use":item_user,"x":item_looker,"examine":item_looker,"check":item_looker,
+				"drop":item_dropper}
 
 
 #--------------------------------Invalid Inputs----------------------------------------
