@@ -354,7 +354,7 @@ def hagSilentMurder(username):
 			  """
 def HagMurder(username):
 	return """
-	The hag screeches and rips you to shreds, displeased by your name.
+	The hag screeches and rips you to shreds, displeased by your name. If only you had been named Jarek Lenda!!!
 	You die, %s!
 	""" % username
 
@@ -838,6 +838,7 @@ def get_name():
 @app.route('/Intro')
 def intro():
 	global history
+	history += "\n\n" + "> %s" % CharName
 	history += "\n\n" + hagSpeech2(CharName)
 	return render_template('input.html', response = history.split('\n'))
 
@@ -845,6 +846,8 @@ def intro():
 def intro_cont():
 	global introCount
 	global history
+	text = request.form['text']
+	history += "\n\n" + "> %s" % text
 	if introCount == 0:
 		introCount += 1
 		history += "\n\n" + hagSpeech3(CharName)
@@ -878,4 +881,4 @@ def get_input():
 	return render_template('input.html', response = history.split('\n'))
 
 if __name__ == '__main__':
-   app.run(debug = True, port=5000)
+   app.run(port=3000)
