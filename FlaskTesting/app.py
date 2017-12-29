@@ -49,4 +49,4 @@ def get_input():
     return render_template('input.html', response = history.split('\n'))
 
 if __name__ == '__main__':
-   app.run(debug = True)
+   app.run(debug = True, port=3000)
