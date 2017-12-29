@@ -324,86 +324,73 @@ def item_looker(name,description,exits,items,command,room):
 
 
 #------------------------------------------------------------------------------
-#---------------------------START FUNCTION-------------------------------------
+#---------------------------Hag Start Phrases----------------------------------
 #------------------------------------------------------------------------------
-#--------------------called when the game starts-------------------------------
 
-#this is REALLY badly formatted. but it works so i wont touch it
-#def start():
 
-#     prompt = "> "
+hagSpeech1 = """
+You stand at the edge of a vast desert.
+Sandstorms whirl around like miniature tornadoes.
+Inside you see massive, monstrous shapes moving about.
+A withered hag waddles out in front of you.
+"EHEHEHEEEE, what is your name small boy??"
+	"""
 
-#     history += "\n" + """
-# You stand at the edge of a vast desert.
-# Sandstorms whirl around like miniature tornadoes.
-# Inside you see massive, monstrous shapes moving about.
-# A withered hag waddles out in front of you.
-# "EHEHEHEEEE, what is your name small boy??"
-#     """
-#     username = raw_input(prompt)
+def hagSpeech2(username):
+	return """
+	Hmmm, %s, eh?? You sound like a nice young boy.
+	Well, %s, I hope you're not thinking of exploring...
+	The desert!!
+	EHEHEHEHE, many people more courageous and attractive than you have tried...
+	and failed!!
+	What makes you think you have what it takes, \'%s\'??
+	If that is your real name???
+	""" % (username, username, username)
 
-#     if username.lower() == "jarek lenda":
-#         history += "\n" + """
-# Hmmm, %s, eh?? You sound like a nice young boy.
-# Well, %s, I hope you're not thinking of exploring...
-# The desert!!
-# EHEHEHEHE, many people more courageous and attractive than you have tried...
-# and failed!!
-# What makes you think you have what it takes, \'%s\'??
-# If that is your real name???
-#         """ % (username, username, username)
+def hagSilentMurder(username):
+	return """
+	The hag screeches and rips you to shreds, displeased by your silence!
+	You die, nameless wanderer!
+			  """
+def HagMurder(username):
+	return """
+	The hag screeches and rips you to shreds, displeased by your name.
+	You die, %s!
+	""" % username
 
-#     elif (username.lower() == "" or username.lower() == " "):
-#         history += "\n" + """
-# The hag screeches and rips you to shreds, displeased by your silence!
-# You die, nameless wanderer!
-#               """
-#         exit()
+def hagSpeech3(username):
+	return """
+	The hag isn't really listening. The hag laughs. \"EHEHEHEEEE, as if that will get you through!
+	No, you'll need a \n~hag\'s help~\nif you\'ve any chance of succeeding! Don't worry,
+	though, %s, I'll help you out... Just as soon as you help me! This way, this way!\"\n\n "PRESS SUBMIT" 
+		""" % username
 
-#     else:
-#         history += "\n" + """
-# The hag screeches and rips you to shreds, displeased by your name.
-# You die, %s!
-#               """ % username
-#         exit()
+def hagSpeech4(username):
+	return """
+	The hag leads you to a nearby apartment complex. \"EHEHEHEEEE, this is
+	where I live! On the first floor, because I was here first! Me! I'm number one!!\"
+	She shouts up to the other windows \"BETTER PAY YOUR RENT SOON OR I\'LL REPORT YOU
+	TO THE LANDLORD, GOOD FOR NOTHINGS!!\" The hag leads you through a door, through an anteroom and
+	into a messy kitchen. \"Here's the deal...\", says the hag, \"my apartment is a mess!!
+	I need a strapping young man like you to help me clean it. But there aren't ordinary messes,
+	oh no. These messes are absolutely... \n~hagalicious~!\nAs such, no normal means of cleaning them will do.\n\n "PRESS SUBMIT"
+	"""
 
-#     reason = raw_input(prompt)
-
-#     history += "\n" + """
-# The hag isn't really listening. The hag laughs. \"EHEHEHEEEE, as if that will get you through!
-# No, you'll need a \n~hag\'s help~\nif you\'ve any chance of succeeding! Don't worry,
-# though, %s, I'll help you out... Just as soon as you help me! This way, this way!\"\n
-#     """ % username
-
-#     raw_input("PRESS ENTER")
-
-#     history += "\n" + """
-# The hag leads you to a nearby apartment complex. \"EHEHEHEEEE, this is
-# where I live! On the first floor, because I was here first! Me! I'm number one!!\"
-# She shouts up to the other windows \"BETTER PAY YOUR RENT SOON OR I\'LL REPORT YOU
-# TO THE LANDLORD, GOOD FOR NOTHINGS!!\" The hag leads you through a door, through an anteroom and
-# into a messy kitchen. \"Here's the deal...\", says the hag, \"my apartment is a mess!!
-# I need a strapping young man like you to help me clean it. But there aren't ordinary messes,
-# oh no. These messes are absolutely... \n~hagalicious~!\nAs such, no normal means of cleaning them will do.\n"""
-
-#     raw_input("PRESS ENTER")
-
-#     history += "\n" + """
-# \"First, there are my dishes. I had a super magic cleaning
-# potion in my secret portal behind the fridge... but the fridge is broken and you're not
-# allowed to move it til it's fixed! Then, there's my display cabinet in the living room.
-# I had a magic feather duster... But I don't know where it went. Find it and dust it!
-# You've also got to vacuum my rug in the bedroom, of course, but good luck with that. I don't
-# even have a vacuum, and it's not like my good for nothing neighbor will let me borrow his.
-# Finally, take out my garbage. It stinks. Good luck!!\" You turn to question the hag, but
-# she's already fled out the front door and you hear a key turn in the lock. \"I'll be back
-# in an hour!\" she says. \"Make sure my house is spick and span -- or else I'll give you a\n
-# ~hagalicious~\n
-# beating!!!!!\" Her footsteps fade, and you sense you are alone.\n\n
-# ------------------------------------HAGQUEST------------------------------------\n\n\n\n
-# To quit, enter \"quit game\".\n\n\n\n"""
-
-#	enter(hags_kitchen)
+def hagSpeech5(username):
+	return """
+	\"First, there are my dishes. I had a super magic cleaning
+	potion in my secret portal behind the fridge... but the fridge is broken and you're not
+	allowed to move it til it's fixed! Then, there's my display cabinet in the living room.
+	I had a magic feather duster... But I don't know where it went. Find it and dust it!
+	You've also got to vacuum my rug in the bedroom, of course, but good luck with that. I don't
+	even have a vacuum, and it's not like my good for nothing neighbor will let me borrow his.
+	Finally, take out my garbage. It stinks. Good luck!!\" You turn to question the hag, but
+	she's already fled out the front door and you hear a key turn in the lock. \"I'll be back
+	in an hour!\" she says. \"Make sure my house is spick and span -- or else I'll give you a\n
+	~hagalicious~\n
+	beating!!!!!\" Her footsteps fade, and you sense you are alone.\n\n
+	------------------------------------HAGQUEST------------------------------------\n\n\n\n
+	To quit, enter \"quit game\".\n\n\n\n"""
 
 
 #-------------------------------------------------------------------------------
@@ -817,20 +804,70 @@ def roomparse(name,description,exits,items,room,command):
 #-------------------------------------------------------------------------------
 #--------------------------------FLASK------------------------------------------
 #-------------------------------------------------------------------------------
-
+global CharName
+CharName = " "
 global text
 text = "look"
 global currentRoom
 currentRoom = hags_kitchen
+global introCount
+introCount = 0
 
 @app.route('/')
+def start():
+	return redirect(url_for('beginning'))
+
+@app.route('/YourNameIsJarekLenda')
+def beginning():
+	global history
+	history += "\n\n" + hagSpeech1
+	return render_template('nameAsk.html')
+
+@app.route('/YourNameIsJarekLenda', methods=['POST'])
+def get_name():
+	text = request.form['text']
+	global CharName
+	CharName = text
+	if "jarek lenda" in CharName.lower():
+		return redirect(url_for('intro'))
+	elif CharName == "":
+		return hagSilentMurder(CharName)
+	else:
+		return HagMurder(CharName)
+
+@app.route('/Intro')
+def intro():
+	global history
+	history += "\n\n" + hagSpeech2(CharName)
+	return render_template('input.html', response = history.split('\n'))
+
+@app.route('/Intro', methods=['POST'])
+def intro_cont():
+	global introCount
+	global history
+	if introCount == 0:
+		introCount += 1
+		history += "\n\n" + hagSpeech3(CharName)
+		return render_template('input.html', response = history.split('\n'))
+	if introCount == 1:
+		introCount += 1
+		history += "\n\n" + hagSpeech4(CharName)
+		return render_template('input.html', response = history.split('\n'))
+	if introCount == 2:
+		introCount += 1
+		history += "\n\n" + hagSpeech5(CharName)
+		return render_template('input.html', response = history.split('\n'))
+	if introCount == 3:
+		return redirect(url_for('start_input'))
+
+@app.route('/TheQuest')
 def start_input():
 	global history
 	global currentRoom
 	currentRoom = enter(currentRoom,text)
 	return render_template('input.html', response = history.split('\n'))
 
-@app.route('/', methods=['POST'])
+@app.route('/TheQuest', methods=['POST'])
 def get_input():
 	global text
 	global history
