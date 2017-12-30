@@ -872,7 +872,6 @@ def start_input():
 
 @app.route('/TheQuest', methods=['POST'])
 def get_input():
-	global text
 	global history
 	global currentRoom
 	text = request.form['text']
