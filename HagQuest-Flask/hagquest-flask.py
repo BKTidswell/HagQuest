@@ -9,6 +9,9 @@ talkerCounter = 0
 global history
 history = ""
 
+global item_being_used
+item_being_used = None
+
 #------------------------------------------------------------------------------
 #---------------------------GLOBAL FUNCTIONS-----------------------------------
 #------------------------------------------------------------------------------
@@ -73,6 +76,9 @@ def helpMe(name,description,exits,items,command,room):
 	history += "\n" + "Here are the functions you can use:"
 	for d in actionDict:
 		history += "\n" + d
+
+def null(name,description,exits,items,command,room):
+	pass
 
 def item_adder(item,roomName):
 	for room in house:
@@ -242,9 +248,18 @@ def item_dropper(name,description,exits,items,command,room):
 #---------------------------Item User-----------------------------------------
 #checks to see if item can be used in the room, if so uses it.
 
-def item_user(name,description,exits,items,command,room):
+def item_user(command):
 	global history 
+	global item_being_used
+
+	if "use" not in command:
+		return False
+
 	splitcommand = command.split(" ")
+	
+	if len(splitcommand) < 2:
+		return False
+
 	usingName = splitcommand[1]
 
 	itemExists = False
@@ -259,16 +274,24 @@ def item_user(name,description,exits,items,command,room):
 
 	if not itemExists:
 		history += "\n" + "%s doesn't exist....." % usingName
-		return
+		return False
 
 	if usingItem in inventory:
 		haveItem = True
 
 	if not haveItem:
 		history += "\n" + "You don't have a %s......" % item.name
-		return
+		return False
 
-	targetName = raw_input("What do you want to use the %s on? \n > "% item.name).lower()
+	item_being_used = usingItem
+	return True
+
+
+def target_getter(targetName,items):
+	global item_being_used
+	global history
+
+	usingItem = item_being_used
 
 	isTarget = False
 	inRoom = False
@@ -744,7 +767,7 @@ item_dict = {}
 #dictionary of all rooms in game with name as key to room
 
 #one's inventory, should be able to check it with "i"
-inventory = [sword]
+inventory = [sword,potion]
 
 #list of commands possible for items
 #item_commands =
@@ -753,8 +776,8 @@ inventory = [sword]
 
 actionDict =    {"die":quitGame,"exit game":quitGame,"quit game":quitGame,"laugh":laugh,"look":look,"-i":checkInventory,"take":item_getter,
 				"get":item_getter,"pick up":item_getter,"east":direction_finder,"west":direction_finder,"north":direction_finder,
-				"south":direction_finder,"help":helpMe,"use":item_user,"x":item_looker,"examine":item_looker,"check":item_looker,
-				"drop":item_dropper,"talk":manTalker,"speak":manTalker}
+				"south":direction_finder,"help":helpMe,"x":item_looker,"examine":item_looker,"check":item_looker,
+				"drop":item_dropper,"talk":manTalker,"speak":manTalker,"null":null}
 
 
 #--------------------------------Invalid Inputs----------------------------------------
@@ -783,22 +806,28 @@ def roomparse(name,description,exits,items,room,command):
 
 	for d in actionDict:
 		if d in command:
-			if actionDict[d] != direction_finder and actionDict[d] != look:
+			if actionDict[d] not in [direction_finder,look,item_user,null]:
 				actionDict[d](name,description,exits,items,command,room)
 				look(name,description,exits,items,command,room)
 				return room
-			elif actionDict[d] != look:
+			elif actionDict[d] == item_user:
+				actionDict[d](name,description,exits,items,command,room)
+				return room
+			elif actionDict[d] == direction_finder:
 				newRoom = actionDict[d](name,description,exits,items,command,room)
 				enter(newRoom,"look")
 				return newRoom
-			else:
+			elif actionDict[d] == look:
 				look(name,description,exits,items,command,room)
+				return room
+			elif actionDict[d] == null:
 				return room
 			validInput = True
 			break
 
 	if not validInput:
-		history += "\n" + random.choice(invalid_input)
+		if command.lower()[0:2] != "use" not in command:
+			history += "\n" + random.choice(invalid_input)
 		return room
 
 #-------------------------------------------------------------------------------
@@ -806,8 +835,8 @@ def roomparse(name,description,exits,items,room,command):
 #-------------------------------------------------------------------------------
 global CharName
 CharName = " "
-global text
-text = "look"
+global beginText
+beginText = "look"
 global currentRoom
 currentRoom = hags_kitchen
 global introCount
@@ -815,7 +844,7 @@ introCount = 0
 
 @app.route('/')
 def start():
-	return redirect(url_for('beginning'))
+	return redirect(url_for('start_input'))
 
 @app.route('/YourNameIsJarekLenda')
 def beginning():
@@ -865,9 +894,11 @@ def intro_cont():
 
 @app.route('/TheQuest')
 def start_input():
+	global beginText
 	global history
 	global currentRoom
-	currentRoom = enter(currentRoom,text)
+	currentRoom = enter(currentRoom,beginText)
+	beginText = "null"
 	return render_template('input.html', response = history.split('\n'))
 
 @app.route('/TheQuest', methods=['POST'])
@@ -875,9 +906,27 @@ def get_input():
 	global history
 	global currentRoom
 	text = request.form['text']
-	history += "\n\n" + ">" + text
-	currentRoom = enter(currentRoom,text)
+	history += "\n\n" + "> " + text
+	if item_user(text):
+		#currentRoom = enter(currentRoom,text)
+		return redirect(url_for('start_usage'))
+	else:
+		currentRoom = enter(currentRoom,text)
+		return render_template('input.html', response = history.split('\n'))
+
+@app.route('/UsingItems')
+def start_usage():
+	global history
+	history += "\n What do you want to use it on?"
 	return render_template('input.html', response = history.split('\n'))
 
+@app.route('/UsingItems', methods=['POST'])
+def get_usage():
+	global history
+	text = request.form['text']
+	history += "\n\n" + "> " + text
+	target_getter(text,currentRoom.items)
+	return redirect(url_for('get_input'))
+
 if __name__ == '__main__':
-   app.run(port=3000)
+   app.run(port=4004)
