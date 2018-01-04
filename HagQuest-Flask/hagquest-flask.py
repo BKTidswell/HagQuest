@@ -5,6 +5,8 @@ from flask import Flask, request, render_template, redirect, url_for
 app = Flask(__name__)
 
 talkerCounter = 0
+choresdone = 0
+tvlooker = 0
 
 global history
 history = ""
@@ -21,7 +23,7 @@ item_being_used = None
 #is started
 #loads up the room
 def enter(room,command):
-	global history 
+	global history
 	#prints room name
 	#history += "\n" + room.name
 	#prints the room description
@@ -41,12 +43,12 @@ def enter(room,command):
 #--------------------------------User Response-----------------------------------
 
 def quitGame(name,description,exits,items,command,room):
-	global history 
+	global history
 	history += "\n" + "Goodbye, quitter!\n"
 	exit()
 
 def laugh(name,description,exits,items,command,room):
-	global history 
+	global history
 	history += "\n" + """
 		You'd laugh, but you're Jarek Lenda. You remember what your father
 		always told you... \"Son! Don't laugh at hags!\"
@@ -54,7 +56,7 @@ def laugh(name,description,exits,items,command,room):
 		"""
 
 def look(name,description,exits,items,command,room):
-	global history 
+	global history
 	history += "\n" + name
 
 	history += "\n" + description
@@ -67,12 +69,12 @@ def look(name,description,exits,items,command,room):
 		history += "\n" + "There is an exit to the " + exit + " here.\n"
 
 def checkInventory(name,description,exits,items,command,room):
-	global history 
+	global history
 	for item in inventory:
 				history += "\n" + "You have a " + item.name
 
 def helpMe(name,description,exits,items,command,room):
-	global history 
+	global history
 	history += "\n" + "Here are the functions you can use:"
 	for d in actionDict:
 		history += "\n" + d
@@ -122,8 +124,14 @@ def item_description_changer(description,itemName):
 	usingItem.description = description
 
 def usage_descriptor(description,eh):
-	global history 
+	global history
 	history += "\n" + description
+
+def chore_iterator(jarek,lenda):
+	global choresdone
+	global history
+	choresdone = choresdone + 1
+	history += "\n" + "Chores done plus one! %d chores done!" % choresdone
 
 def spider_adder(roomName,numSpiders):
 	for room in house:
@@ -134,7 +142,7 @@ def spider_adder(roomName,numSpiders):
 		usingRoom.items.append(spider)
 
 def manTalker(name,description,exits,items,command,room):
-	global history 
+	global history
 	global talkerCounter
 	if room.name == "Backyard":
 		if vacuum in inventory:
@@ -162,7 +170,7 @@ def manTalker(name,description,exits,items,command,room):
 #parses the player's input to see if they're trying to move in a direction, and
 #returns correct response
 def direction_finder(name,description,exits,items,command,room):
-	global history 
+	global history
 	#for the dictionary of invalid and valid exits brought over from the "room" objects
 	for i in exits["valid exits"]:
 		#if any movement keywords related to the valid exits exist we go that way and call up the enter function
@@ -217,7 +225,7 @@ def direction_finder(name,description,exits,items,command,room):
 #checks to see if an item is in the room and gettable; if so, removes from room
 #and adds to inventory
 def item_getter(name,description,exits,items,command,room):
-	global history 
+	global history
 	for item in items:
 		if item.name.lower() in command and item.takable:
 			inventory.append(item)
@@ -233,7 +241,7 @@ def item_getter(name,description,exits,items,command,room):
 #checks to see if an item is in the room and gettable; if so, removes from room
 #and adds to inventory
 def item_dropper(name,description,exits,items,command,room):
-	global history 
+	global history
 	for item in allItems:
 		if item.name.lower() in command and item in inventory:
 			inventory.remove(item)
@@ -249,14 +257,14 @@ def item_dropper(name,description,exits,items,command,room):
 #checks to see if item can be used in the room, if so uses it.
 
 def item_user(command):
-	global history 
+	global history
 	global item_being_used
 
 	if "use" not in command:
 		return False
 
 	splitcommand = command.split(" ")
-	
+
 	if len(splitcommand) < 2:
 		return False
 
@@ -311,6 +319,9 @@ def target_getter(targetName,items):
 		history += "\n" + "Spiders appeared!!!!"
 		return
 
+	if targetItem in inventory:
+		inRoom = True
+
 	if targetItem in items:
 		inRoom = True
 
@@ -332,12 +343,28 @@ def target_getter(targetName,items):
 #for examining items/objects
 #to do - better function name than item looker????
 def item_looker(name,description,exits,items,command,room):
-	global history 
-	for item in items:
+	global history
+	global tvlooker
+	#print items
+	#print inventory
+	#so it goes through all the items
+	for item in allItems:
+		#and checks to see which items you're referring to
 		if command.split(" ")[1] in item.name.lower():
+			#and hecks to see if that item is in your inventory
 			if item in inventory:
 				history += "\n" + item.description
 				return
+    #if its not it forgets about that and goes through the list of items in the room
+	for item in items:
+		if command.split(" ")[1] in item.name.lower():
+
+			if "The TV signal is crystal clean. You can see an add for a portable forging set." in item.description:
+				if tvlooker == 0:
+					history += "\n" + "You decide to take down the number -- could be useful."
+					item_invent_adder("Infomercial Number","eh")
+					tvlooker = 1
+
 			for room in house:
 				if room.name == name:
 					history += "\n" + item.description
@@ -383,9 +410,9 @@ def HagMurder(username):
 
 def hagSpeech3(username):
 	return """
-	The hag isn't really listening. The hag laughs. \"EHEHEHEEEE, as if that will get you through!
+	The hag isn't really listening. She laughs. \"EHEHEHEEEE, as if that will get you through!
 	No, you'll need a \n~hag\'s help~\nif you\'ve any chance of succeeding! Don't worry,
-	though, %s, I'll help you out... Just as soon as you help me! This way, this way!\"\n\n "PRESS SUBMIT" 
+	though, %s, I'll help you out... Just as soon as you help me! This way, this way!\"\n\n "PRESS SUBMIT"
 		""" % username
 
 def hagSpeech4(username):
@@ -402,14 +429,15 @@ def hagSpeech4(username):
 def hagSpeech5(username):
 	return """
 	\"First, there are my dishes. I had a super magic cleaning
-	potion in my secret portal behind the fridge... but the fridge is broken and you're not
+	potion for them in my fridge... but the fridge is broken and you're not
 	allowed to move it til it's fixed! Then, there's my display cabinet in the living room.
 	I had a magic feather duster... But I don't know where it went. Find it and dust it!
 	You've also got to vacuum my rug in the bedroom, of course, but good luck with that. I don't
 	even have a vacuum, and it's not like my good for nothing neighbor will let me borrow his.
-	Finally, take out my garbage. It stinks. Good luck!!\" You turn to question the hag, but
-	she's already fled out the front door and you hear a key turn in the lock. \"I'll be back
-	in an hour!\" she says. \"Make sure my house is spick and span -- or else I'll give you a\n
+	Finally, take out my garbage; the dumpster is right outside. It stinks. Good luck!!\"
+	You turn to question the hag, but she's already fled out the front door and
+	you hear a key turn in the lock. \"I'll be back in an hour!\" she says.
+	\"Make sure my house is spick and span -- or else I'll give you a\n
 	~hagalicious~\n
 	beating!!!!!\" Her footsteps fade, and you sense you are alone.\n\n
 	------------------------------------HAGQUEST------------------------------------\n\n\n\n
@@ -492,8 +520,8 @@ vacuum = Item("Vacuum", "\"The Super-Sucker 5000 -- the ultimate in cleaning tec
 	True,{})
 
 terrarium = Item("Terrarium", "Looks like the perfect home for any small-to-medium-sized reptile, amphibian, insect or gnome.",
-	True,{spider:[usage_descriptor,["You open up the terrarium and show it to the spider. She happily jumps in and makes herself at home!"],
-						item_invent_adder,["Spider Box","eh"],
+	True,{spider:[usage_descriptor,["You open up the terrarium and show it to the spider. She happily jumps in and makes herself at home!","eh"],
+						item_invent_adder,["New Pet","eh"],
 						item_invent_remover,["Spider","eh"],
 						item_invent_remover,["Terrarium","eh"]]})
 
@@ -509,13 +537,13 @@ trash = Item("Trash", "It's a hag's trash. I wouldn't look in if I were you -- d
 ladder = Item("Ladder", "Hag's ladder. The rungs spell out H A G. Not convenient or even safe, but definitely stylish.",
 	True,{})
 
-tv = Item("TV", "You can barely see anything through the static on this TV. It looks like some sort of informercial? Starring a dwarf?",
+tv = Item("TV", "You can barely see anything through the static on this TV. It looks like some sort of infomercial? Starring a dwarf?",
 	False,{})
 
 portable_forge = Item("Forge", "It's the latest and greatest in portable blacksmithing -- though honestly, portable blacksmithing hasn't come far.",
 	True,{})
 
-spider_box = Item("Spider Box", "It's the terrarium with the spider inside. She looks happy here, making webs and... you know, other spider things.",
+spider_box = Item("New Pet", "It's the terrarium with the spider inside. She looks happy here, making webs and... you know, other spider things.",
 	True,{})
 
 ceiling_fan = Item("Ceiling Fan", "A pretty pristine ceiling fan. It's set to the highest setting, creating a strong breeze. Colder definitely is better!",
@@ -529,7 +557,7 @@ rusty_hammer = Item("Rusty Hammer", "A rusty hammer. Looks like it's been used f
 						   item_invent_adder,["Hammer of Radiant Light","eh"],
 						   item_invent_remover,["Rusty Hammer","eh"]]})
 
-cabinet = Item("Cabinet", "A dusty cabinet.",
+cabinet = Item("Cabinet", "A dusty, webby cabinet. In a word, foreboding.",
 	False,{feather_duster:[usage_descriptor,["""
 	You steel yourself and get to dusting. It\'s like your father always said -
 	\"Son, if you cannot dust a hag\'s cabinets then you will never be successful
@@ -543,8 +571,9 @@ cabinet = Item("Cabinet", "A dusty cabinet.",
 	the metallic gleaming was a key lying on the bottom shelf!\n
 	""","eh"],
 	item_adder,[spider,"Hag's Living Room"],
+	chore_iterator,["jarek","lenda"],
 	item_adder,[key,"Hag's Living Room"],
-	item_description_changer,["A clean cabinet","Cabinet"],
+	item_description_changer,["An old -- clean -- cabinet.","Cabinet"],
 	item_description_changer,["This spider actually looks rather nice and friendly -- must've been the webs. She waves at you.","Spider"],
 	room_description_changer,["""\n\n
 	It looks as if someone made it their goal to come here every day of their life
@@ -553,7 +582,7 @@ cabinet = Item("Cabinet", "A dusty cabinet.",
 	it is. The wallpaper is old, peeling and stained a sort of blackish purple, with
 	any pattern that had been there before now hidden. There is a TV in the corner
 	which seems to be switching between static and what appears to be some sort of
-	informercial. There is a purple recliner facing the TV, with a hag-shaped
+	infomercial. There is a purple recliner facing the TV, with a hag-shaped
 	indentation in the seat. Against the far wall is what has to be the oldest,
 	saggiest display cabinet you've ever seen. Since the dusting, though, you've
 	come to appreciate more. It's not old and saggy, it's... antique. Yeah.\n
@@ -566,6 +595,7 @@ dishes = Item("Dishes", "Some dirty dishes.",
 	"are still in place, you realize all the dishes are not only clean, but "+
 	"stacked in neat little rows! The salad forks and entree forks have even "+
 	"been separated! Truly magic is still alive in this world. Another chore down!\n","eh"],
+	chore_iterator,["Jarek","Lenda"],
 				   item_description_changer,["You can better appreciate the dishes now that they're clean. The hag has an impressive collection of Fiestaware.","Dishes"],
 				   room_description_changer,["""\n
 				   A significantly less greasy old kitchen which has seen better days -
@@ -580,28 +610,60 @@ dishes = Item("Dishes", "Some dirty dishes.",
 				   west wall open out onto a dismal alley. The ceiling fan still works,
 				   and it's still blowing a mighty fine breeze. You bask a bit.\n""","Hag's Kitchen"]]})
 
-garbage_can = Item("Garbage Can", "A can for garbage.",
-	False,{trash:[usage_descriptor,["You place the garbage right in the can","eh"],
+garbage_can = Item("Dumpster", "A dumpster. You know. For garbage. What about this isn't obvious to you?",
+	False,{trash:[usage_descriptor,["""You skirt the corpse of the dragon and tenderly, lovingly, place the garbage
+	into the garbage can. It fits in there like it belongs there, like it has belonged there,
+	even from the moment of this Earth's creation. Except for a terrarium, which falls
+	out from the garbage bag as you put it into the dumpster.""","eh"],
 					item_adder,[terrarium,"Alley"],
-					item_description_changer,["A can full of garbage.","Garbage Can"]]})
+					item_invent_remover,[trash,"eh"],
+					chore_iterator,["Jarek","Lenda"],
+					item_description_changer,["A dumpster, fulfilling its purpose in life as we all must.","Dumpster"]]})
 
-dragon = Item("Dragon", "It's one big ol' dragon.",
-	False,{hammer:[usage_descriptor,["You bop the dragon on the nose","eh"],
+dragon = Item("Dragon", "It's a huge dragon, radiant gold, growling at you from the other end of the alley. It's resting on a hoard of garbage..",
+	False,{hammer:[usage_descriptor,["""Your fight with the dragon is too epic to do it full justice, but suffice
+	to say there were plenty of backflips, near death experiences, lots of fire, etc.
+	Eventually, by harnessing the molten core reactor of the Hammer and booting it into
+	overdrive, you are able to dodge the dragon's plasma breath and deliver a finishing blow.""","eh"],
 				   item_adder,[garbage_can,"Alley"],
-				   item_description_changer,["This dragon looks badly beaten","Dragon"],
-				   room_description_changer,["No dragons here anymore. Youc an get to the garbage can tho","Alley"]]})
+				   item_description_changer,["Dead. The way of all flesh. You meditate on your own mortality for a minute.","Dragon"],
+				   room_description_changer,["""\nA long, narrow, alley about twenty feet wide which is bricked
+				   up on either end, throwing everything into shadow. You are at one end of the alley,
+				   and at the other end you think you can see a dumpster (who puts a dumpster in a
+				   bricked up alley?? How does the garbageman even get it????) The way to
+				   the dumpster has been cleared, though now there's a dead dragon to clean up. Whatever.
+				   There is a little speck of roof that juts out from the wall above you, with what
+				   looks to be a row of satellite dishes on it.\n""","Alley"]]})
 
 rug = Item("Rug", "It's like a shag carpet, if the shag were dust. ... What I'm trying to say is it's incredibly dusty. You walk skirting the edges.\n",
-	False,{vacuum:[usage_descriptor,["You turn on the vaccum and clean off that rug","eh"],
-				   item_description_changer,["Wow this rug is now clean. Not just grey and dusty.","Rug"],
-				   room_description_changer,["Looks like this room has a clean rug in it.","Hag's Bedroom"]]})
+	False,{vacuum:[usage_descriptor,["""You turn on the vaccum and clean off the rug. Then you do it again. Then you do it again...
+	This goes on for a while. As you work it becomes increasingly apparent that whatever or wherever this rug is,
+	there is more dust than rug. Eventually, after about fifteen minutes, you uncover a small throw rug in the
+	center of the room. Emblazoned on it are the words \"Hag is where the heart is!\" Charming.""","eh"],
+	               chore_iterator,["Jarek","Lenda"],
+				   item_description_changer,["The tiny rug is bright pink, cheery and spotless.","Rug"],
+				   room_description_changer,["""\n\nAhhh, the prized jewel of casa del Hag.
+				   There is a four poster bed draped with what is either a sensuous curtain or a malaria net,
+				   or maybe both. You can see the hag's makeup kit on her armoire, which seems to be composed
+				   of different colors of poison dart frog. The window provides a wonderful view of a brick wall,
+				   Her closet is filled with literal skeletons, but by far the star of the show is the carpet.
+				   This is because, newly dusted, it gives the room just that tiny hint of humanity. Perhaps,
+				   just perhaps, the hag is just like you and I. Don't we all crave love?
+				   Still smells like hag in here.
+				   ""","Hag's Bedroom"]]})
+
+makeup = Item("Makeup", "Makeup made from poison dart frogs. This hag is dangerously beautiful. Better left alone",
+                False,{})
 
 satellite_dish = Item("Satellite Dish", "The satellite dish. It's barely held up by a feather duster. If you just took the duster it would probably break and the hag would have your head.",
 	False,{sword:[usage_descriptor,["You quickly swap out the sword for the feather duster! The sword is sure wedged in there now. You probably couldn't get it back without breaking the satellite dish.\n","eh"],
 				  item_invent_adder,["Feather Duster","eh"],
 				  item_invent_remover,["Sword","eh"],
 				  item_description_changer,["The satellite dish. It's securely held up by your sword.","Satellite Dish"],
-				  item_description_changer,["Now is crystal clean. You can see an add for a portable forging set","TV"]]})
+				  item_description_changer,["The TV signal is crystal clean. You can see an add for a portable forging set.","TV"]]})
+
+forge_number = Item("Infomercial Number", "The number from the TV infomercial. Remember -- supplies are going fast!",
+    True,{})
 
 roof = Item("Roof", "The top of the house. You can see a satellite dish, thought it's too far to reach for now.....",
 	False,{ladder:[usage_descriptor,["You place the ladder. Now you have access to the satellite dish!","eh"],
@@ -615,12 +677,12 @@ pool = Item("Pool", "The pool is filled with acid. There's something at the bott
 	"can only describe as a pool full of acid being cleared of acid. When you go back to inspect the pool "+
 	"the acid is all gone! It turns out there was an old hammer lying at the bottom of the pool!\n","eh"],
 				   item_adder,[rusty_hammer,"Backyard"],
-				   item_description_changer,["An empty pool with a rusty hammer at the bottom. You'd swim in this now -- I mean, if there were water.","Pool"]]})
+				   item_description_changer,["A lovely kiddie pool sans acid. You'd swim in this now -- I mean, if there were water.","Pool"]]})
 
-elemental = Item("Man", "He appears to be a large, blue man who seems thoroughly unhappy. He's dressed in a bathrobe.",
-	False,{spider_box:[usage_descriptor,["You give the man the terrarium with the spider. He seems overjoyed and thanks you profusely. He disappears inside, and returns with a big vacuum which he tosses it to you."],
-				   item_invent_adder,["vacuum","eh"],
-				   item_invent_remover,["Spider Box","eh"],
+elemental = Item("Man", "He appears to be a large, blue man who ia thoroughly unhappy. He's dressed in a bathrobe.",
+	False,{spider_box:[usage_descriptor,["You give the man the terrarium with the spider. He seems overjoyed and thanks you profusely. He disappears inside, and returns with a big vacuum which he tosses it to you.","eh"],
+				   item_invent_adder,["Vacuum","eh"],
+				   item_invent_remover,["New Pet","eh"],
 				   item_description_changer,["A happy air elemental with his pet spider, waving to you from the window.","Man"],
 				   room_description_changer,["""\n\nYou wouldn't think there was much room for a backyard here, and you'd be right.
 				   This is a tiny, probably 15x15 strip of land, the majority of which is taken up by a pool.
@@ -648,6 +710,8 @@ telephone = Item("Phone", "It's the hag's escape-proof telephone. Rotary, of cou
 	"back out the window. The phone goes to voicemail, but the fridge is fixed!\n"+
 	"It opens to reveal the potion you need!","eh"],
 	item_adder,[potion,"Hag's Kitchen"],
+	item_invent_remover,["Book","eh"],
+	item_description_changer,["A newly fixed fridge, laughing and smiling as all fridges should.","Refrigerator"],
 	room_description_changer,["""\n
 	A greasy old kitchen which has seen better days - or maybe not. The dishes are
 	stacked high, almost to the ceiling, and have started to ooze out onto the
@@ -657,9 +721,25 @@ telephone = Item("Phone", "It's the hag's escape-proof telephone. Rotary, of cou
 	is open and empty. Against the wall is a grimy phone,
 	though it looks like the numbers 9 and 1 have been removed. Windows on the
 	west wall open out onto a dismal alley. The ceiling fan still works, though,
-	so there's that. You find the slight breeze rather refreshing.\n""","Hag's Kitchen"]]})
+	so there's that. You find the slight breeze rather refreshing.\n""","Hag's Kitchen"]],
+	forge_number:[usage_descriptor,["You pick up the telephone and, trying to keep\n"+
+	"it as far from your face as possible, dial the infomercial number. While\n"+
+	"you're waiting for someone to pick up, the same dwarf from the infomercial\n"+
+	"somersaults through the window with what looks like a humming, volatile cube\n"+
+	"of an ominous red color. \"Remember,\" he says, \"This is to be used for\n"+
+	"weaponry only! We're not liable for any damages resulting from misuse. Enjoy\n"+
+	"your product.\" Before you can gather your wits and say anything, he backflips\n"+
+	"out the window again. The phone goes to voicemail, but the forge remains.","eh"],
+	item_adder,[portable_forge,"Hag's Kitchen"],
+	item_invent_remover,["Infomercial Number","eh"]]})
 
-fridge = Item("Refrigerator","This refrigerator is sparking, creaking and crying. It would be best not to approach it, certainly.",
+closet = Item("Closet", "A closet full of skeletons. They're all grinninng, so they must be happy there.",
+                False,{})
+
+skeletons = Item("Skeletons", "Dem dry bones.",
+                False, {})
+
+fridge = Item("Refrigerator","This refrigerator is s1parking, creaking and crying. It would be best not to approach it, certainly.",
 	False,{})
 
 potions = Item("Potions","You'd say these haggy potions are the biggest mess of all, but it seems the hag likes them just the way they are. Best not to get too near lest you become Jarek, Frog Prince.",
@@ -671,10 +751,27 @@ window = Item("Window 1","This window looks out onto a bricked up alley. A charm
 window2 = Item("Window 2","This window... Is this even a window? It's got a glass pane, but then it's just bricks. Either the architect or the windowsmith is to blame, but you don't know who.",
 	False,{})
 
+smoke = Item("Smoke","This weird smoke is floating around the living room. You don't see a cigarette or even an ashtray, but it's smoky nonetheless.",
+    False,{})
+
+wallpaper = Item("Wallpaper", "This wallpaper is ugly. It has pictures of ugly flowers on it. Rafflesias.",
+    False,{})
+
+armoire = Item("Armoire", "The hag's prized armoire. This is perfectly clean, surprisingly. \"From Hagatha, to Hagarella\" is emblazoned on the side.",
+    False,{})
+
+bed = Item("Bed", "The hag's own bed. A dog-eared copy of \"Bedtime Stories for Wicked Hags\" rests on the table beside it.",
+    False,{})
+
+window3 = Item("Window 3", "This window is hard to admire objectively because there's a large blue man in it.",
+    False,{})
+
+
 allItems = [potion,feather_duster,sword,spider,watch,key,knife,vacuum,cabinet,dragon,garbage_can,
 			rug,dishes,trash,hammer,telephone_book,terrarium,satellite_dish,roof,ladder,tv,
 			portable_forge,rusty_hammer,pool,elemental,spider_box,drawer,telephone,fridge,
-			ceiling_fan,chair,tv,potions,window,window2]
+			ceiling_fan,chair,tv,potions,window,window2,makeup,closet,skeletons,smoke,forge_number,
+			armoire,bed,window3]
 
 #ok so some chains of events
 
@@ -714,13 +811,13 @@ unidentifiable origin which, sadly, does not prevent you from seeing how filthy
 it is. The wallpaper is old, peeling and stained a sort of blackish purple, with
 any pattern that had been there before now hidden. There is a TV in the corner
 which seems to be switching between static and what appears to be some sort of
-informercial. There is a purple recliner facing the TV, with a hag-shaped
+infomercial. There is a purple recliner facing the TV, with a hag-shaped
 indentation in the seat. Against the far wall is what has to be the oldest,
 saggiest display cabinet you've ever seen. Perhaps the purpose was originally to
 display cobwebs, but you doubt it -- regardless, that's what it is displaying
 now, with a huge, nasty looking spider glaring at you from inside.\n""",
 {"valid exits" : ["west","east","north"], "invalid exits" : ["south","northeast","southeast","northwest","southwest"]},
-[cabinet,chair,tv])
+[cabinet,chair,tv,smoke])
 
 alley = Room("Alley","""\n\nA long, narrow, alley about twenty feet wide which is bricked
 up on either end, throwing everything into shadow. You are at one end of the alley,
@@ -742,7 +839,7 @@ with ruglike attributes.
 Smells like hag in here.
 """,
 {"valid exits" : ["west"], "invalid exits" : ["north","south","east","northeast","southeast","northwest","southwest"]},
-[rug,window2])
+[rug,window2,makeup,skeletons,closet,armoire,bed])
 
 hags_backyard = Room("Backyard","""\n\nYou wouldn't think there was much room for a backyard here, and you'd be right.
 This is a tiny, probably 15x15 strip of land, the majority of which is taken up by a pool.
@@ -753,7 +850,7 @@ on the other side of the pool, however, and next to that a window, and in the wi
 large blue man making an obscene gesture at you.
 """,
 {"valid exits" : ["south"], "invalid exits" : ["north","east","west","northeast","northwest","southeast","southwest"]},
-[pool,elemental,ladder])
+[pool,elemental,ladder,window3])
 
 house = [hags_kitchen,hags_livingroom,alley,hags_bedroom,hags_backyard]
 
@@ -761,16 +858,8 @@ house = [hags_kitchen,hags_livingroom,alley,hags_bedroom,hags_backyard]
 #---------------------------GLOBAL VARIABLES-----------------------------------
 #------------------------------------------------------------------------------
 
-#dictionary of all items in game with name as key to object
-item_dict = {}
-
-#dictionary of all rooms in game with name as key to room
-
 #one's inventory, should be able to check it with "i"
-inventory = [sword,potion]
-
-#list of commands possible for items
-#item_commands =
+inventory = [sword]
 
 #--------------------------------Action Dictionary----------------------------------------
 
@@ -799,10 +888,14 @@ invalid_input = ["No... Think! What would a Lenda do?!\n",
 #this parser parses what actions can be done to basically anything at this point
 def roomparse(name,description,exits,items,room,command):
 	global history
+	global choresdone
 	#so... always
 
 	#the beginning of each run asks the player for their input
 	validInput = False
+
+	if choresdone == 4:
+		history = "You win. The hag comes back and high fives you."
 
 	for d in actionDict:
 		if d in command:
@@ -929,4 +1022,4 @@ def get_usage():
 	return redirect(url_for('get_input'))
 
 if __name__ == '__main__':
-   app.run(port=4004)
+   app.run(port=4057)
