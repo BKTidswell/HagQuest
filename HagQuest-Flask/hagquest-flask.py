@@ -223,7 +223,7 @@ def direction_finder(name,description,exits,items,command,room):
 #and adds to inventory
 def item_getter(name,description,exits,items,command,room):
 	global history
-	itemName = command.split(" ")
+	itemName = command.split(" ")[1]
 	for item in items:
 		if itemName in item.name.lower() and item.takable:
 			inventory.append(item)
