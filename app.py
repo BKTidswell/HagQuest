@@ -928,7 +928,7 @@ introCount = 0
 
 @app.route('/')
 def start():
-	return redirect(url_for('start_input'))
+	return redirect(url_for('beginning'))
 
 @app.route('/YourNameIsJarekLenda')
 def beginning():
