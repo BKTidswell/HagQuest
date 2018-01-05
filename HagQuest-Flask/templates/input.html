@@ -1,5 +1,14 @@
 <html>
 	<head>
+		<div class="top">
+    		<font size="20" color=#FFE618>&nbsp HagQuest</font>
+		</div>
+		<style>
+		.top{position: fixed; width: 20%; top: 0; height: 60px; background: #7F2DFF}
+		body{
+			background-color: #FFF5D2
+		}
+		</style>
 		<script type="text/javascript">
 			function moveWin()
       		{  
@@ -8,8 +17,9 @@
 		</script>
 	</head>
    <body onLoad="moveWin();">
+   	<br><br>
     <h3>{% for para in response %}
-    		<p>{{para}}</p>
+    		<font color=#000000><p>{{para}}</p></font>
 		{% endfor %}
 	</h3>
 	
