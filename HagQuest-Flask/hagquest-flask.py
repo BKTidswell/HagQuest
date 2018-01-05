@@ -1013,4 +1013,4 @@ def get_usage():
 	return redirect(url_for('get_input'))
 
 if __name__ == '__main__':
-   app.run(port=4057)
+   app.run()
