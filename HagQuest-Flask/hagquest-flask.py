@@ -133,13 +133,10 @@ def chore_iterator(jarek,lenda):
 	choresdone = choresdone + 1
 	history += "\n" + "Chores done plus one! %d chores done!" % choresdone
 
-def spider_adder(roomName,numSpiders):
-	for room in house:
-		if room.name == roomName:
-			usingRoom = room
-			break
+def spider_adder(numSpiders):
+	global currentRoom
 	for x in range(numSpiders):
-		usingRoom.items.append(spider)
+		currentRoom.items.append(spider)
 
 def manTalker(name,description,exits,items,command,room):
 	global history
@@ -226,8 +223,9 @@ def direction_finder(name,description,exits,items,command,room):
 #and adds to inventory
 def item_getter(name,description,exits,items,command,room):
 	global history
+	itemName = command.split(" ")
 	for item in items:
-		if item.name.lower() in command and item.takable:
+		if itemName in item.name.lower() and item.takable:
 			inventory.append(item)
 			for room in house:
 				if room.name == name:
@@ -275,17 +273,10 @@ def item_user(command):
 	usable = False
 
 	for item in allItems:
-		if usingName.lower() in item.name.lower():
+		if usingName.lower() in item.name.lower() and item in inventory:
 			usingItem = item
-			itemExists = True
+			haveItem = True
 			break
-
-	if not itemExists:
-		history += "\n" + "%s doesn't exist....." % usingName
-		return False
-
-	if usingItem in inventory:
-		haveItem = True
 
 	if not haveItem:
 		history += "\n" + "You don't have a %s......" % item.name
@@ -315,7 +306,7 @@ def target_getter(targetName,items):
 		return
 
 	if targetItem == spider and usingItem == spider:
-		spider_adder(name,random.randint(2,10))
+		spider_adder(random.randint(2,10))
 		history += "\n" + "Spiders appeared!!!!"
 		return
 
@@ -336,7 +327,7 @@ def target_getter(targetName,items):
 				funcArray[x](funcArray[x+1][0],funcArray[x+1][1])
 			return
 
-	history += "\n" + "You used the %s on the %s. But. Nothing happened..." % (usingItem.name,targetItem.name)
+	history += "\n" + "You used the %s on the %s. But nothing happened..." % (usingItem.name,targetItem.name)
 
 
 #---------------------------ITEM LOOKER-----------------------------------------
@@ -859,7 +850,7 @@ house = [hags_kitchen,hags_livingroom,alley,hags_bedroom,hags_backyard]
 #------------------------------------------------------------------------------
 
 #one's inventory, should be able to check it with "i"
-inventory = [sword]
+inventory = [sword,rusty_hammer]
 
 #--------------------------------Action Dictionary----------------------------------------
 
